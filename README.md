@@ -2,28 +2,23 @@
 
 Split trips, rent, and dinners without the group-chat math.
 
-Split Smart is a full-stack expense-splitting app that helps groups track shared expenses and settle up with the minimum number of transactions (debt simplification), instead of everyone paying everyone back separately.
+Split Smart is a modern, premium full-stack expense-splitting application that helps groups track shared expenses and settle up with the minimum number of transactions (debt simplification), instead of everyone paying everyone back separately. 
 
-## 🔗 Live Demo
+## ✨ Key Features
 
-- **App:** [https://splitsmart-p656.vercel.app](https://splitsmart-p656.vercel.app)
-- **Backend API:** [https://splitsmart-backend-g6rr.onrender.com](https://splitsmart-backend-g6rr.onrender.com)
-
-> Note: the backend runs on Render's free tier, so if it's been inactive for a while, the first request may take up to ~50 seconds while the server spins back up.
-
-## ✨ Features
-
-- User registration and login with JWT-based authentication
-- Create groups and add members
-- Log shared expenses within a group
-- Automatic debt simplification — settle up with fewer transactions
-- Persistent data storage with MongoDB
+- **Smart Settlement Engine**: Turn a tangled web of group IOUs into a simple, mathematically optimized payment plan to minimize total transactions.
+- **Financial Command Center**: A sleek, fintech-style dashboard answering "What do I owe?" and "What am I owed?" instantly.
+- **Spending Insights**: Visual analytics (Pie charts and Bar charts) breaking down group spending by category and monthly trends.
+- **Custom Splits**: Split bills equally or exactly by custom percentages and amounts.
+- **Modern UX/UI**: Premium aesthetics, skeleton loading states, global toast notifications, and responsive mobile-first design.
+- **Secure Authentication**: Complete user registration and login flows protected by JSON Web Tokens (JWT).
 
 ## 🛠️ Tech Stack
 
 **Frontend**
 - React (Vite)
-- Axios for API calls
+- Recharts (for analytics visualizations)
+- Vanilla CSS (Custom Design System)
 - Deployed on [Vercel](https://vercel.com)
 
 **Backend**
@@ -41,17 +36,17 @@ Split Smart is a full-stack expense-splitting app that helps groups track shared
 expense-splitter/
 ├── backend/
 │   ├── middleware/       # Auth middleware
-│   ├── models/           # Mongoose schemas
-│   ├── routes/           # API routes (auth, groups, expenses)
-│   ├── utils/            # Helper functions (e.g. debt simplification logic)
+│   ├── models/           # Mongoose schemas (User, Group, Expense)
+│   ├── routes/           # API routes
+│   ├── utils/            # Smart debt simplification algorithm
 │   ├── server.js         # App entry point
 │   └── .env.example      # Environment variable template
 └── frontend/
     ├── src/
-    │   ├── components/
-    │   ├── pages/
-    │   ├── api.js         # Axios instance + API base URL config
-    │   ├── AuthContext.jsx
+    │   ├── components/   # Reusable UI (Modals, TopBar)
+    │   ├── pages/        # Dashboard, GroupWorkspaces, Auth
+    │   ├── api.js        # Axios instance + API base URL config
+    │   ├── ToastContext.jsx # Global notification state
     │   └── App.jsx
     └── vite.config.js
 ```
@@ -76,7 +71,7 @@ cd backend
 npm install
 ```
 
-Create a `.env` file in `backend/` (copy from `.env.example`) and fill in your own values:
+Create a `.env` file in `backend/` and fill in your own values:
 
 ```env
 PORT=5000
@@ -123,25 +118,25 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ## ☁️ Deployment
 
-This project is deployed using three separate services:
+This project is built to be deployed using three separate services:
 
 | Piece | Service |
 |---|---|
 | Database | MongoDB Atlas |
-| Backend (Express API) | Render |
-| Frontend (Vite/React) | Vercel |
+| Backend (Express API) | Render, Railway, or Heroku |
+| Frontend (Vite/React) | Vercel or Netlify |
 
 Environment variables needed for deployment:
 
-**Render (backend)**
+**Backend Environment**
 ```
 MONGO_URI=<your Atlas connection string>
-JWT_SECRET=<a secret string>
+JWT_SECRET=<a secure random string>
 PORT=5000
 CLIENT_URL=<your deployed frontend URL>
 ```
 
-**Vercel (frontend)**
+**Frontend Environment (Vercel)**
 ```
 VITE_API_URL=<your deployed backend URL>/api
 ```
