@@ -12,10 +12,7 @@ const app = express();
 // ======================
 // Debug (Remove later)
 // ======================
-console.log("Current Working Directory:", process.cwd());
-console.log("MONGO_URI:", process.env.MONGO_URI);
-console.log("CLIENT_URL:", process.env.CLIENT_URL);
-console.log("PORT:", process.env.PORT);
+// Debug logging removed for security
 
 // Middleware
 app.use(cors({

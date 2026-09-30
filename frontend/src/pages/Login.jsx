@@ -13,6 +13,10 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!email || !password) {
+      setError('Please fill in all fields.');
+      return;
+    }
     setError('');
     setLoading(true);
     try {
@@ -20,7 +24,7 @@ export default function Login() {
       login(data.token, data.user);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
@@ -29,22 +33,30 @@ export default function Login() {
   return (
     <div className="auth-wrap">
       <div className="auth-card">
-        <div className="auth-eyebrow">Welcome back</div>
-        <h1 className="auth-title">Sign in</h1>
-        <p className="auth-sub">Track shared expenses and settle up in fewer transactions.</p>
+        <div className="auth-header">
+          <div className="brand brand-centered">Split<span className="brand-mark">Smart</span></div>
+          <h1 className="auth-title">Welcome back</h1>
+          <p className="auth-sub">
+            Split expenses.<br/>
+            Understand your balance.<br/>
+            Settle smarter.
+          </p>
+        </div>
 
-        {error && <div className="error-banner">{error}</div>}
+        {error && <div className="error-banner" role="alert">{error}</div>}
 
         <form onSubmit={handleSubmit}>
           <div className="field">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">Email address</label>
             <input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={loading}
               placeholder="you@example.com"
+              autoComplete="email"
             />
           </div>
           <div className="field">
@@ -55,16 +67,23 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={loading}
               placeholder="••••••••"
+              autoComplete="current-password"
             />
           </div>
-          <button type="submit" className="btn btn-sage" style={{ width: '100%' }} disabled={loading}>
+          <button 
+            type="submit" 
+            className="btn btn-primary" 
+            style={{ width: '100%', marginTop: '0.5rem' }} 
+            disabled={loading || !email || !password}
+          >
             {loading ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
 
         <div className="auth-switch">
-          Don't have an account? <Link to="/register" style={{ color: 'var(--sage)', fontWeight: 600 }}>Create one</Link>
+          Don't have an account? <Link to="/register">Create account</Link>
         </div>
       </div>
     </div>

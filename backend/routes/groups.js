@@ -41,6 +41,78 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
+// @route GET /api/groups/dashboard
+// Returns global summary, enriched groups, and recent activity
+router.get('/dashboard', auth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const groups = await Group.find({ members: userId }).populate('members', 'name email').sort({ createdAt: -1 });
+    const groupIds = groups.map(g => g._id);
+
+    const expenses = await Expense.find({ group: { $in: groupIds } })
+      .populate('paidBy', 'name')
+      .populate('group', 'name')
+      .sort({ date: -1 });
+
+    let youOwe = 0;
+    let youAreOwed = 0;
+    const groupBalances = {};
+
+    groups.forEach(g => {
+      groupBalances[g._id.toString()] = 0;
+    });
+
+    expenses.forEach(exp => {
+      const isPayer = exp.paidBy._id.toString() === userId;
+      let userShare = 0;
+      
+      exp.splitBetween.forEach(s => {
+        if (s.user.toString() === userId) {
+          userShare = s.share;
+        }
+      });
+
+      const groupIdStr = exp.group._id.toString();
+      
+      if (isPayer) {
+        groupBalances[groupIdStr] += (exp.amount - userShare);
+      } else {
+        groupBalances[groupIdStr] -= userShare;
+      }
+    });
+
+    const groupsWithBalance = groups.map(g => {
+      const bal = groupBalances[g._id.toString()];
+      if (bal > 0) youAreOwed += bal;
+      if (bal < 0) youOwe += Math.abs(bal);
+      return {
+        ...g.toObject(),
+        userBalance: Math.round(bal * 100) / 100
+      };
+    });
+
+    const recentActivity = expenses.slice(0, 5).map(e => ({
+      _id: e._id,
+      description: e.description,
+      amount: e.amount,
+      paidBy: e.paidBy.name,
+      groupName: e.group.name,
+      date: e.date
+    }));
+
+    res.json({
+      summary: {
+        youOwe: Math.round(youOwe * 100) / 100,
+        youAreOwed: Math.round(youAreOwed * 100) / 100
+      },
+      groups: groupsWithBalance,
+      recentActivity
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error fetching dashboard', error: err.message });
+  }
+});
+
 // @route GET /api/groups/:id
 router.get('/:id', auth, async (req, res) => {
   try {
